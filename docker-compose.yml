@@ -4,6 +4,8 @@ services:
     image: shubham4004/devopsreponit:latest
     ports:
       - 80:80
+    volumes:
+      - "devopsvol"
     deploy:
       replicas: 3
 
@@ -11,6 +13,8 @@ services:
     image: shubham4004/awsreponit:latest
     ports:
       - 81:80
+    volumes:
+      - "awsvol"
     deploy:
       replicas: 3
 
@@ -18,12 +22,11 @@ services:
     image: shubham4004/datasciencereponit:latest
     ports:
       - 82:80
+    volumes:
+      - "datasciencevol"
     deploy:
       replicas: 3
 
   azure:
     image: shubham4004/azurereponit:latest
     ports:
-      - 83:80
-    deploy:
-      replicas: 3
