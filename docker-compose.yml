@@ -1,0 +1,23 @@
+version: "3"
+services:
+  devops:
+    image: shubham4004/devopsreponit:latest
+    ports:
+      - 80:80
+    replicas: 3
+
+  aws:
+    image: shubham4004/awsreponit:latest
+    ports:
+      - 80:80
+    replicas: 3
+  datascience:
+    image: shubham4004/datasciencereponit:latest
+    ports:
+      - 81:80
+    replicas: 3
+  azure:
+    image: shubham4004/azurereponit:latest
+    ports:
+      - 82:80
+    replicas: 3
