@@ -30,3 +30,9 @@ services:
   azure:
     image: shubham4004/azurereponit:latest
     ports:
+      - 83:80
+    volumes:
+      - "azurevol"
+    deploy:
+      replicas: 3
+
