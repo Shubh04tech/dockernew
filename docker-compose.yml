@@ -4,20 +4,26 @@ services:
     image: shubham4004/devopsreponit:latest
     ports:
       - 80:80
-    replicas: 3
+    deploy:
+      replicas: 3
 
   aws:
     image: shubham4004/awsreponit:latest
     ports:
       - 81:80
-    replicas: 3
+    deploy:
+      replicas: 3
+
   datascience:
     image: shubham4004/datasciencereponit:latest
     ports:
       - 82:80
-    replicas: 3
+    deploy:
+      replicas: 3
+
   azure:
     image: shubham4004/azurereponit:latest
     ports:
       - 83:80
-    replicas: 3
+    deploy:
+      replicas: 3
