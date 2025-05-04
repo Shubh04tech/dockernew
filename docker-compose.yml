@@ -9,15 +9,15 @@ services:
   aws:
     image: shubham4004/awsreponit:latest
     ports:
-      - 80:80
+      - 81:80
     replicas: 3
   datascience:
     image: shubham4004/datasciencereponit:latest
     ports:
-      - 81:80
+      - 82:80
     replicas: 3
   azure:
     image: shubham4004/azurereponit:latest
     ports:
-      - 82:80
+      - 83:80
     replicas: 3
