@@ -1,177 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Rain Prediction</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #83a4d4, #b6fbff);
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 500px;
-      background: white;
-      padding: 30px;
-      margin: auto;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h1 {
-      text-align: center;
-    }
-    label, input {
-      display: block;
-      width: 100%;
-      margin-bottom: 15px;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      background: #0077cc;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    #prediction {
-      margin-top: 20px;
-      font-weight: bold;
-      color: #333;
-    }
-  </style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Add icon library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+* {box-sizing: border-box;}
+
+.input-container {
+  display: -ms-flexbox; /* IE10 */
+  display: flex;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.icon {
+  padding: 10px;
+  background: dodgerblue;
+  color: white;
+  min-width: 50px;
+  text-align: center;
+}
+
+.input-field {
+  width: 100%;
+  padding: 10px;
+  outline: none;
+}
+
+.input-field:focus {
+  border: 2px solid dodgerblue;
+}
+
+/* Set a style for the submit button */
+.btn {
+  background-color: dodgerblue;
+  color: white;
+  padding: 15px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  opacity: 0.9;
+}
+
+.btn:hover {
+  opacity: 1;
+}
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>Predict Rain</h1>
-    <label>Precipitation: <input type="number" id="precipitation" /></label>
-    <label>Temp Max: <input type="number" id="temp_max" /></label>
-    <label>Temp Min: <input type="number" id="temp_min" /></label>
-    <label>Wind: <input type="number" id="wind" /></label>
 
-    <button onclick="train()">Train Model</button>
-    <button onclick="test()">Test Model</button>
-    <button onclick="predictions()">Predict</button>
-    <button onclick="save()">Save Model</button>
-    <button onclick="load()">Load Model</button>
-
-    <div id="prediction"></div>
+<form action="/action_page.php" style="max-width:500px;margin:auto">
+  <h2>PAYTM RECHARGE</h2>
+  <div class="input-container">
+    <i class="fa fa-user icon"></i>
+    <input class="input-field" type="text" placeholder="Username" name="usrnm">
   </div>
 
-  <script>
-    let model;
-    let featureValueMax, featureValueMin;
-    let TrainingFeature, TrainingLabel, TestingFeature, TestingLabel;
-    let classLabel = ["sun", "rain", "fog", "drizzle", "snow"]; // Example
+  <div class="input-container">
+    <i class="fa fa-envelope icon"></i>
+    <input class="input-field" type="text" placeholder="Email" name="email">
+  </div>
+  
+  <div class="input-container">
+    <i class="fa fa-key icon"></i>
+    <input class="input-field" type="password" placeholder="Password" name="psw">
+  </div>
 
-    function normalise(tensor, min, max) {
-      return tensor.sub(min).div(max.sub(min));
-    }
+  <button type="submit" class="btn">Register</button>
+</form>
 
-    function createModel() {
-      const model = tf.sequential();
-      model.add(tf.layers.dense({ units: 16, activation: 'relu', inputShape: [4] }));
-      model.add(tf.layers.dense({ units: classLabel.length, activation: 'softmax' }));
-      model.compile({
-        loss: 'categoricalCrossentropy',
-        optimizer: tf.train.adam(0.01),
-        metrics: ['accuracy']
-      });
-      return model;
-    }
-
-    async function trainModel() {
-      const callbacks = tfvis.show.fitCallbacks({ name: 'Training Performance' }, ['loss', 'acc'], { height: 200 });
-      const history = await model.fit(TrainingFeature, TrainingLabel, {
-        batchSize: 32,
-        epochs: 20,
-        callbacks
-      });
-      alert("Training completed!");
-      return history;
-    }
-
-    async function train() {
-      model = createModel();
-      tfvis.show.modelSummary({ name: 'Model Summary' }, model);
-      const history = await trainModel();
-      const finalLoss = history.history.loss.pop();
-      alert(`Final loss after training: ${finalLoss}`);
-    }
-
-    async function test() {
-      const evalResult = model.evaluate(TestingFeature, TestingLabel);
-      const loss = (await evalResult[0].data())[0];
-      const acc = (await evalResult[1].data())[0];
-      alert(`Loss: ${loss.toFixed(4)}, Accuracy: ${(acc * 100).toFixed(2)}%`);
-    }
-
-    async function predictions() {
-      const values = [
-        parseFloat(document.getElementById("precipitation").value),
-        parseFloat(document.getElementById("temp_max").value),
-        parseFloat(document.getElementById("temp_min").value),
-        parseFloat(document.getElementById("wind").value)
-      ];
-
-      const inputTensor = tf.tensor2d([values]);
-      const normInput = normalise(inputTensor, featureValueMin, featureValueMax);
-      const prediction = model.predict(normInput);
-      const result = await prediction.data();
-
-      let html = "<ul>";
-      classLabel.forEach((label, i) => {
-        html += `<li>Weather: <strong>${label}</strong> — Chance: <strong>${(result[i] * 100).toFixed(2)}%</strong></li>`;
-      });
-      html += "</ul>";
-      document.getElementById("prediction").innerHTML = html;
-    }
-
-    async function save() {
-      await model.save("localstorage://seattle-weather");
-      alert("Model saved!");
-    }
-
-    async function load() {
-      model = await tf.loadLayersModel("localstorage://seattle-weather");
-      alert("Model loaded!");
-    }
-
-    async function run() {
-      const data = await tf.data.csv("http://127.0.0.1:8080/seattle-weather.csv").toArray();
-      const cleaned = data.filter(d => d.precipitation && d.temp_max && d.temp_min && d.wind && d.weather);
-      if(cleaned.length % 2 !== 0){
-        cleaned.pop();
-      }
-      let validpoints=cleaned.filter(p => p!== null)
-
-      const featureValues = validpoints.map(d => [d.precipitation, d.temp_max, d.temp_min, d.wind]);
-      const labels = validpoints.map(d => {
-        const oneHot = Array(classLabel.length).fill(0);
-        const index = classLabel.indexOf(d.weather);
-        oneHot[index] = 1;
-        return oneHot;
-      });
-
-      const featureTensor = tf.tensor2d(featureValues);
-      featureValueMax = featureTensor.max();
-      featureValueMin = featureTensor.min();
-      const normFeatures = normalise(featureTensor, featureValueMin, featureValueMax);
-      const labelTensor = tf.tensor2d(labels);
-
-      [TrainingFeature, TestingFeature] = tf.split(normFeatures, 2);
-      [TrainingLabel, TestingLabel] = tf.split(labelTensor, 2);
-
-      alert("Data loaded and preprocessed!");
-    }
-
-    run();
-  </script>
 </body>
 </html>
